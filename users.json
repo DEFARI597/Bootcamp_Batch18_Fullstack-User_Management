@@ -1,0 +1,24 @@
+[
+  {
+    "name": "awdasda",
+    "email": "srgs",
+    "phone": ""
+  },
+  {
+    "name": "defari",
+    "email": "defari@",
+    "phone": "1231231"
+  },
+  {
+    "name": "bram",
+    "email": "bram@",
+    "phone": "123123"
+  },
+  {
+    "name": "defari1",
+    "email": "defari@1",
+    "phone": "123123",
+    "role": "user",
+    "isActive": true
+  }
+]

@@ -1,41 +1,30 @@
 console.log('User Management System');
 
-const data = [{
-    name: 'John Doe',
-    email: 'john@example.com',
-    phone: '081231231',
-    role: 'USER',
-    isActive: true
-},
-{
-    name: 'udin',
-    email: 'udin@user.com',
-    phone: '012831283',
-    role: 'USER',
-    isActive: true
-},
-{
-    name: 'Admin User',
-    email: 'admin@company.com',
-    phone: '081231232',
-    role: 'ADMIN',
-    isActive: false
-}];
+const users = require('./user');
+const rl = require('./readline');
+const fs = require('fs');
 
-const greetUser = (data) => {
-    data.forEach(data => {
-        if (data.isActive === true) {
-            console.log('User is active');
-        } else {
-            console.log('User is not active');
-        }
-        console.log(`Name: ${data.name}
-        Email: ${data.email}
-        Phone: ${data.phone}
-        Role: ${data.role}
-        Status: ${data.isActive}`);
-    });
-
+if (!fs.existsSync('users.json')) {
+    fs.writeFileSync('users.json', JSON.stringify(users, null, 2), 'utf-8');
 }
 
-greetUser(data)
+
+rl((newUserData) => {
+    const data = JSON.parse(fs.readFileSync("users.json", "utf-8"));
+    console.log(data);
+
+    const isExist = data.some(
+        (user) => user.name.trim().toLowerCase() === newUserData.name.trim().toLowerCase()
+    );
+
+    if (isExist) {
+        console.log(`\nNama "${newUserData.name}" sudah ada. Data batal disimpan.`);
+        return;
+    }
+
+    data.push(newUserData);
+    fs.writeFileSync('users.json', JSON.stringify(data, null, 2));
+
+    console.log('\nData berhasil disimpan. Data pengguna saat ini:');
+    console.log(data);
+});
