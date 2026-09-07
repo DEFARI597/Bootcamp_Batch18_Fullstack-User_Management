@@ -20,5 +20,21 @@
     "phone": "123123",
     "role": "user",
     "isActive": true
+  },
+  {
+    "name": "Andi Firmansyah",
+    "email": "andi@gmail.com",
+    "password": "Password123!",
+    "phone": "08123456789",
+    "role": "user",
+    "isActive": true
+  },
+  {
+    "name": "Muhammad Sumbul",
+    "email": "sumbul@gmail.com",
+    "password": "Abcd1243",
+    "phone": "01233231",
+    "role": "user",
+    "isActive": true
   }
 ]
