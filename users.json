@@ -36,5 +36,10 @@
     "phone": "01233231",
     "role": "user",
     "isActive": true
+  },
+  {
+    "name": "Budi",
+    "email": "-",
+    "phone": "081234567890"
   }
 ]

@@ -1,5 +1,9 @@
 const validator = require("validator");
 
+const isValidPhone = (phone) => {
+    return validator.isMobilePhone(phone, 'id-ID');
+};
+
 const isValidEmail = (email) => {
     return validator.isEmail(email);
 };
@@ -27,5 +31,6 @@ module.exports = {
     isValidEmail,
     isValidPassword,
     isValidIsActive,
-    isValidName
+    isValidName,
+    isValidPhone
 };
