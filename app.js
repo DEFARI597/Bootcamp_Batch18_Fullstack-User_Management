@@ -1,30 +1,34 @@
 console.log('User Management System');
 
-const users = require('./user');
+const expressApp = require('./express');
+const httpHandler = require('./http');
 const rl = require('./readline');
-const fs = require('fs');
+const User = require('./user');
 
-if (!fs.existsSync('users.json')) {
-    fs.writeFileSync('users.json', JSON.stringify(users, null, 2), 'utf-8');
-}
+expressApp.use(httpHandler);
 
+const PORT = process.env.PORT || 3000;
+expressApp.listen(PORT, () => {
+    console.log(`Server Running On Port ${PORT}`);
 
-rl((newUserData) => {
-    const data = JSON.parse(fs.readFileSync("users.json", "utf-8"));
-    console.log(data);
-
-    const isExist = data.some(
-        (user) => user.name.trim().toLowerCase() === newUserData.name.trim().toLowerCase()
-    );
-
-    if (isExist) {
-        console.log(`\nNama "${newUserData.name}" sudah ada. Data batal disimpan.`);
-        return;
-    }
-
-    data.push(newUserData);
-    fs.writeFileSync('users.json', JSON.stringify(data, null, 2));
-
-    console.log('\nData berhasil disimpan. Data pengguna saat ini:');
-    console.log(data);
+    console.log("--- CLI: Add new user (or press Ctrl+C to exit) ---");
+    runCli();
 });
+
+function runCli() {
+    rl(async (newUserData) => {
+        try {
+            const exists = await User.checkExistsByName(newUserData.name);
+            if (exists) {
+                console.log(`\nNama "${newUserData.name}" sudah ada. Data batal disimpan.\n`);
+            } else {
+                await User.create(newUserData);
+                console.log('\nData berhasil disimpan ke PostgreSQL.\n');
+            }
+        } catch (error) {
+            console.error('\nError menyimpan data:', error);
+        }
+
+        runCli();
+    });
+}

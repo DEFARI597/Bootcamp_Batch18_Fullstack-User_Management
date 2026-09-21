@@ -2,11 +2,15 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const { isValidName, isValidEmail, isValidPhone } = require('./validator');
-const app = express();
+const User = require('./user');
+const cors = require('cors');
 
+const app = express();
+app.use(cors());
 
 app.set('view engine', 'ejs');
-
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 function logger(req, res, next) {
     console.log(`[${req.method}]`, req.url);
@@ -47,38 +51,33 @@ function validateUser(req, res, next) {
     next();
 }
 
-app.get('/add-users', validateUser, (req, res) => {
-    const name = req.query.name;
-    const email = req.query.email || "-";
-    const phone = req.query.phone;
+app.get('/add-users', validateUser, async (req, res) => {
+    try {
+        const name = req.query.name;
+        const email = req.query.email || "-";
+        const phone = req.query.phone;
 
-    const usersFilePath = path.join(__dirname, 'users.json');
-    let users = [];
-
-    if (fs.existsSync(usersFilePath)) {
-        const fileContent = fs.readFileSync(usersFilePath, 'utf-8');
-        if (fileContent.trim()) {
-            users = JSON.parse(fileContent);
+        const exists = await User.checkExistsByName(name);
+        if (exists) {
+            return res.status(409).send(`Conflict: User with name "${name}" already exists`);
         }
+
+        const newUser = await User.create({ name, email, phone });
+        res.status(201).send(`Data user berhasil disimpan di PostgreSQL! ID: ${newUser.id}`);
+    } catch (error) {
+        console.error('Error adding user:', error);
+        res.status(500).send('Internal Server Error');
     }
-
-    const newUser = { name, email, phone };
-    users.push(newUser);
-
-    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2), 'utf-8');
-
-    res.status(201).send('Data user berhasil disimpan di users.json!');
 });
 
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'homepage.html'));
-});
-
-app.get('/users', (req, res) => {
-    const fileContent = fs.readFileSync(path.join(__dirname, 'users.json'), 'utf-8');
-    const data = JSON.parse(fileContent);
-    res.render('users', { data });
+app.get('/users', async (req, res) => {
+    try {
+        const data = await User.getAll();
+        res.render('users', { data });
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 app.get('/users/:id', (req, res) => {
@@ -86,16 +85,19 @@ app.get('/users/:id', (req, res) => {
     res.send('User Detail');
 });
 
-app.get('/contact', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'contact.html'));
+app.get('/api/users', async (req, res) => {
+    try {
+        const data = await User.getAll();
+        res.json(data);
+    } catch (error) {
+        console.error('Error fetching API users:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
 
-
-
+// Any unmatched routes in express will fallback to 404 (handled in app.js or here)
 app.use((req, res) => {
     res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
 });
 
-app.listen(3000, () => {
-    console.log('Server Running On Port 3000');
-});
+module.exports = app;

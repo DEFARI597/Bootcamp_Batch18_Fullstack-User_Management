@@ -1,2 +1,3 @@
 ssh
-ssh.pub
+ssh.pubnode_modules
+.env

@@ -50,8 +50,6 @@ const askQuestions = async (callback) => {
         }
     }
 
-    rl.close();
-
     const role = roleInput.trim().toLowerCase() === "admin" ? "admin" : "user";
     const cleanActiveInput = activeInput.trim().toLowerCase();
     const isActive = cleanActiveInput === "true" || cleanActiveInput === "y";

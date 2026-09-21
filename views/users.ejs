@@ -1,20 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Users | User Management System</title>
+    <link rel="stylesheet" href="/style.css">
 </head>
-
 <body>
-    <h1>Users UMS</h1>
-    <ul>
-        <% data.forEach(user=> { %>
-            <li>Nama: <%= user.name || '-' %> | Email: <%= user.email || '-' %> | No. HP: <%= user.phone || '-' %>
-            </li>
-            <% }) %>
-    </ul>
-</body>
+    <header>
+        <nav>
+            <a href="/" class="logo">UMS</a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/users" class="active">Users</a>
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
+            </div>
+        </nav>
+    </header>
 
+    <main>
+        <div class="glass-panel">
+            <h1>Users List</h1>
+            <p>List of all users managed in the PostgreSQL database.</p>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (data && data.length > 0) { %>
+                            <% data.forEach(user => { %>
+                                <tr>
+                                    <td><%= user.id %></td>
+                                    <td><%= user.name || '-' %></td>
+                                    <td><%= user.email || '-' %></td>
+                                    <td><%= user.phone || '-' %></td>
+                                    <td><span style="text-transform: capitalize;"><%= user.role || 'User' %></span></td>
+                                    <td>
+                                        <% if(user.status === 'active') { %>
+                                            <span class="status-badge status-active">Active</span>
+                                        <% } else { %>
+                                            <span class="status-badge status-inactive">Inactive</span>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 2rem;">No users found in database.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
 </html>

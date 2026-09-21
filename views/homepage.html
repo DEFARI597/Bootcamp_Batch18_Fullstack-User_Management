@@ -1,14 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Homepage | User Management System</title>
+    <link rel="stylesheet" href="/style.css">
 </head>
-
 <body>
-    <h1>Homepage UMS</h1>
-</body>
+    <header>
+        <nav>
+            <a href="/" class="logo">UMS</a>
+            <div class="nav-links">
+                <a href="/" class="active">Home</a>
+                <a href="/users">Users</a>
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
+            </div>
+        </nav>
+    </header>
 
+    <main>
+        <div class="glass-panel">
+            <h1>Welcome to UMS</h1>
+            <p>Your premium User Management System powered by Node.js and PostgreSQL.</p>
+            <a href="/users" class="btn">View All Users</a>
+        </div>
+    </main>
+</body>
 </html>
