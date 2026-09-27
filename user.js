@@ -26,6 +26,27 @@ class User {
         const result = await pool.query(query, [name]);
         return result.rows.length > 0;
     }
+    static async update(id, userData) {
+        const { name, email, phone, role = 'user', isActive = true } = userData;
+        const status = isActive ? 'active' : 'inactive';
+        
+        const query = `
+            UPDATE users 
+            SET name = $1, email = $2, phone = $3, role = $4, status = $5, updated_at = CURRENT_TIMESTAMP
+            WHERE id = $6
+            RETURNING *
+        `;
+        const values = [name, email, phone, role, status, id];
+        
+        const result = await pool.query(query, values);
+        return result.rows[0];
+    }
+
+    static async delete(id) {
+        const query = 'DELETE FROM users WHERE id = $1 RETURNING *';
+        const result = await pool.query(query, [id]);
+        return result.rows[0];
+    }
 }
 
 module.exports = User;

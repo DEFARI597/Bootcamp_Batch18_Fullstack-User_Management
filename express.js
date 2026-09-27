@@ -7,7 +7,7 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors());
-
+app.use(express.json());
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -91,6 +91,61 @@ app.get('/api/users', async (req, res) => {
         res.json(data);
     } catch (error) {
         console.error('Error fetching API users:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.post('/api/users', async (req, res) => {
+    try {
+        const { name, email, phone, role, isActive } = req.body;
+
+        if (!name || !phone) {
+            return res.status(400).json({ error: 'Name and phone are required' });
+        }
+
+        const exists = await User.checkExistsByName(name);
+        if (exists) {
+            return res.status(409).json({ error: `User with name "${name}" already exists` });
+        }
+
+        const newUser = await User.create({ name, email, phone, role, isActive });
+        res.status(201).json(newUser);
+    } catch (error) {
+        console.error('Error adding API user:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.put('/api/users/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, email, phone, role, isActive } = req.body;
+
+        if (!name || !phone) {
+            return res.status(400).json({ error: 'Name and phone are required' });
+        }
+
+        const updatedUser = await User.update(id, { name, email, phone, role, isActive });
+        if (!updatedUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.json(updatedUser);
+    } catch (error) {
+        console.error('Error updating API user:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.delete('/api/users/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedUser = await User.delete(id);
+        if (!deletedUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.json({ message: 'User deleted successfully', user: deletedUser });
+    } catch (error) {
+        console.error('Error deleting API user:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
